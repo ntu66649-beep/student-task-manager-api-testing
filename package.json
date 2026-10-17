@@ -1,0 +1,24 @@
+{
+  "name": "student-task-manager-api-testing",
+  "version": "1.0.0",
+  "description": "Student Task Manager – REST API Testing project with Postman for SWT301",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node test/api.test.js"
+  },
+  "keywords": [
+    "swt301",
+    "postman",
+    "api-testing",
+    "express",
+    "rest-api"
+  ],
+  "author": "SWT301 Student",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2"
+  }
+}
