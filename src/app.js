@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const authRoutes = require('./routes/auth.routes');
 const taskRoutes = require('./routes/task.routes');
 const { resetData } = require('./data/tasks.data');
@@ -10,8 +11,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Root health check endpoint
+// Serve static frontend assets from public directory
+app.use(express.static(path.join(__dirname, '../public'), { index: false }));
+
+// Root endpoint: serve web UI for browsers, JSON docs for API clients
 app.get('/', (req, res) => {
+  if (req.accepts('html')) {
+    return res.sendFile(path.join(__dirname, '../public/index.html'));
+  }
   res.status(200).json({
     success: true,
     message: 'Welcome to Student Task Manager API - SWT301',

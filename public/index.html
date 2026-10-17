@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Task Manager - SWT301</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="header-branding">
+        <h1 class="app-title">Student Task Manager</h1>
+        <p class="app-subtitle">He thong Quan ly Nhiem vu Sinh vien - SWT301 REST API Demo</p>
+      </div>
+      <div class="header-user" id="header-user-panel">
+        <span class="user-status-text" id="user-status-label">Trang thai: Chua dang nhap</span>
+        <button type="button" class="btn btn-secondary btn-sm" id="btn-logout" style="display: none;">Dang xuat</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Notification Banner -->
+  <div class="notification-container" id="notification-container" style="display: none;">
+    <div class="notification-box" id="notification-box">
+      <span class="notification-text" id="notification-text"></span>
+      <button type="button" class="notification-close" id="notification-close">Dong</button>
+    </div>
+  </div>
+
+  <main class="main-content">
+    <!-- SECTION 1: LOGIN (Displayed when unauthenticated) -->
+    <section class="section-card auth-section" id="auth-section">
+      <div class="auth-card">
+        <div class="section-header">
+          <h2 class="section-title">Dang nhap he thong</h2>
+          <p class="section-desc">Vui long dang nhap bang tai khoan sinh vien de quan ly nhiem vu hoc tap.</p>
+        </div>
+
+        <form id="login-form" class="app-form" autocomplete="off">
+          <div class="form-group">
+            <label for="login-username" class="form-label">Ten dang nhap</label>
+            <input type="text" id="login-username" class="form-control" value="student" placeholder="Nhap ten dang nhap" required>
+          </div>
+
+          <div class="form-group">
+            <label for="login-password" class="form-label">Mat khau</label>
+            <input type="password" id="login-password" class="form-control" value="password123" placeholder="Nhap mat khau" required>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary btn-block" id="btn-login-submit">Dang nhap</button>
+          </div>
+        </form>
+
+        <div class="login-hint">
+          <p class="hint-title">Thong tin kiem thu API mac dinh:</p>
+          <p class="hint-item">Tai khoan: <strong>student</strong> | Mat khau: <strong>password123</strong></p>
+          <p class="hint-item">Endpoint API: <code>POST /api/login</code></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION 2: TASK DASHBOARD (Displayed when authenticated) -->
+    <section class="dashboard-section" id="dashboard-section" style="display: none;">
+      <!-- Stats Summary and Filter Bar -->
+      <div class="dashboard-toolbar">
+        <div class="toolbar-stats" id="task-stats">
+          <span class="stat-badge">Tong so: <strong id="stat-total">0</strong></span>
+          <span class="stat-badge">Can lam: <strong id="stat-todo">0</strong></span>
+          <span class="stat-badge">Dang lam: <strong id="stat-inprogress">0</strong></span>
+          <span class="stat-badge">Da hoan thanh: <strong id="stat-completed">0</strong></span>
+        </div>
+
+        <div class="toolbar-controls">
+          <label for="filter-status" class="filter-label">Loc theo trang thai:</label>
+          <select id="filter-status" class="form-select">
+            <option value="">Tat ca</option>
+            <option value="TODO">Can lam (TODO)</option>
+            <option value="IN_PROGRESS">Dang lam (IN_PROGRESS)</option>
+            <option value="COMPLETED">Da hoan thanh (COMPLETED)</option>
+          </select>
+          <button type="button" class="btn btn-secondary btn-sm" id="btn-refresh-tasks">Lam moi du lieu</button>
+        </div>
+      </div>
+
+      <!-- Main Layout: Add Task Form & Task List -->
+      <div class="dashboard-grid">
+        <!-- Column 1: Add Task Form -->
+        <div class="grid-column">
+          <div class="section-card">
+            <div class="section-header">
+              <h2 class="section-title">Them nhiem vu moi</h2>
+              <p class="section-desc">Gui yeu cau POST den <code>/api/tasks</code> voi Bearer token.</p>
+            </div>
+
+            <form id="add-task-form" class="app-form" autocomplete="off">
+              <div class="form-group">
+                <label for="task-title" class="form-label">Tieu de nhiem vu <span class="required-mark">*</span></label>
+                <input type="text" id="task-title" class="form-control" placeholder="Vi du: Lam bai tap Postman Assignment 1" required>
+              </div>
+
+              <div class="form-group">
+                <label for="task-description" class="form-label">Mo ta chi tiet</label>
+                <textarea id="task-description" class="form-control" rows="3" placeholder="Nhap noi dung chi tiet ve yeu cau nhiem vu..."></textarea>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group col-half">
+                  <label for="task-course" class="form-label">Mon hoc</label>
+                  <input type="text" id="task-course" class="form-control" value="SWT301" placeholder="SWT301">
+                </div>
+
+                <div class="form-group col-half">
+                  <label for="task-due-date" class="form-label">Han hoan thanh</label>
+                  <input type="date" id="task-due-date" class="form-control">
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group col-half">
+                  <label for="task-priority" class="form-label">Muc do uu tien</label>
+                  <select id="task-priority" class="form-select">
+                    <option value="LOW">Thap (LOW)</option>
+                    <option value="MEDIUM" selected>Trung binh (MEDIUM)</option>
+                    <option value="HIGH">Cao (HIGH)</option>
+                  </select>
+                </div>
+
+                <div class="form-group col-half">
+                  <label for="task-status" class="form-label">Trang thai ban dau</label>
+                  <select id="task-status" class="form-select">
+                    <option value="TODO" selected>Can lam (TODO)</option>
+                    <option value="IN_PROGRESS">Dang lam (IN_PROGRESS)</option>
+                    <option value="COMPLETED">Da hoan thanh (COMPLETED)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-actions-inline">
+                <button type="submit" class="btn btn-primary" id="btn-add-task-submit">Them nhiem vu</button>
+                <button type="reset" class="btn btn-secondary">Dat lai</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Column 2: Task List -->
+        <div class="grid-column">
+          <div class="section-card">
+            <div class="section-header">
+              <h2 class="section-title">Danh sach nhiem vu</h2>
+              <p class="section-desc">Du lieu thuc tu <code>GET /api/tasks</code> (khong luu tru cuc bo).</p>
+            </div>
+
+            <!-- Loading indicator -->
+            <div id="tasks-loading" class="empty-state" style="display: none;">
+              <p>Dang tai danh sach nhiem vu tu API...</p>
+            </div>
+
+            <!-- Empty State -->
+            <div id="tasks-empty" class="empty-state" style="display: none;">
+              <p class="empty-title">Chua co nhiem vu nao</p>
+              <p class="empty-desc">Tao nhiem vu moi o bieu mau ben trai de bat dau quan ly.</p>
+            </div>
+
+            <!-- Tasks Container -->
+            <div id="tasks-list" class="tasks-container">
+              <!-- Task cards will be rendered dynamically by JavaScript via fetch() -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <div class="footer-container">
+      <p>Student Task Manager - REST API Testing with Postman</p>
+      <p>Mon hoc: SWT301 - Kiem thu phan mem | Express.js REST API Backend</p>
+    </div>
+  </footer>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>

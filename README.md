@@ -6,23 +6,30 @@ Dự án REST API đơn giản và bộ kiểm thử tự động (Automated API
 
 ## 📌 1. Giới thiệu dự án
 
-Dự án mô phỏng hệ thống quản lý nhiệm vụ học tập của sinh viên (**Student Task Manager**), cung cấp các API RESTful phục vụ cho việc kiểm thử tự động.
+Dự án mô phỏng hệ thống quản lý nhiệm vụ học tập của sinh viên (**Student Task Manager**), cung cấp các API RESTful phục vụ cho việc kiểm thử tự động, kèm theo giao diện web tối giản minh họa kết nối REST API.
 
-- **Công nghệ sử dụng:** Node.js, Express.js.
+- **Backend:** Node.js, Express.js.
+- **Frontend:** HTML, CSS, JavaScript thuần (kết nối REST API qua `fetch()`, không lưu task vào `localStorage`).
 - **Công cụ kiểm thử:** Postman (Collection + Tests Scripts), Newman CLI (tùy chọn).
 - **Lưu trữ dữ liệu:** In-Memory Mock Data (không cần cài đặt cơ sở dữ liệu phức tạp).
 - **Cơ chế xác thực:** Bearer Token (Mock JWT).
 
 ---
 
-## 📂 2. Cấu trúc thư mục
+## 2. Cấu trúc thư mục
 
 ```text
 student-task-manager-api-testing/
-├── postman/                                          # Thư mục chứa file kiểm thử Postman
+├── postman/                                          # File kiểm thử Postman
 │   ├── Student_Task_Manager_API.postman_collection.json     # Postman Collection v2.1.0 (kèm tests script)
 │   └── Student_Task_Manager_Environment.postman_environment.json # Postman Environment
-├── src/                                              # Mã nguồn ứng dụng
+├── public/                                           # Giao diện Website minh họa REST API
+│   ├── css/
+│   │   └── style.css                                 # Giao diện tối giản, chuyên nghiệp (không emoji)
+│   ├── js/
+│   │   └── app.js                                    # Logic kết nối API qua fetch()
+│   └── index.html                                    # Trang chủ (Login & Dashboard)
+├── src/                                              # Mã nguồn ứng dụng backend
 │   ├── data/
 │   │   └── tasks.data.js                             # Dữ liệu mẫu ban đầu (Mock Data)
 │   ├── middleware/
@@ -30,11 +37,11 @@ student-task-manager-api-testing/
 │   ├── routes/
 │   │   ├── auth.routes.js                            # API Đăng nhập (Login)
 │   │   └── task.routes.js                            # API CRUD Nhiệm vụ (Tasks)
-│   ├── app.js                                        # Cấu hình Express app
+│   ├── app.js                                        # Cấu hình Express app & static server
 │   └── server.js                                     # Khởi động Web Server (Port 3000)
 ├── test/
 │   └── api.test.js                                   # Script kiểm thử tự động bằng Node.js
-├── .gitignore                                        # Loại trừ node_modules khi push Git
+├── .gitignore                                        # Bỏ qua node_modules
 ├── package.json                                      # Thông tin dự án và dependencies
 └── README.md                                         # Hướng dẫn chi tiết
 ```
@@ -112,7 +119,32 @@ Collection bao gồm đầy đủ kịch bản kiểm thử **Thành công (Posi
 
 ---
 
-## 🎯 6. Hướng dẫn chạy và Demo trên Postman
+## 6. Hướng dẫn trải nghiệm Giao diện Website (Web Demo)
+
+1. Khởi động server:
+   ```bash
+   npm start
+   ```
+2. Mở trình duyệt web bất kỳ và truy cập địa chỉ:
+   ```text
+   http://localhost:3000
+   ```
+3. Đăng nhập với tài khoản:
+   - Tên đăng nhập: `student`
+   - Mật khẩu: `password123`
+4. Trải nghiệm các chức năng trực quan:
+   - **Xem danh sách nhiệm vụ:** Tải dữ liệu thực từ `GET /api/tasks`.
+   - **Lọc nhiệm vụ:** Lọc theo trạng thái `TODO`, `IN_PROGRESS`, `COMPLETED`.
+   - **Thêm nhiệm vụ:** Điền form và bấm "Thêm nhiệm vụ" (gọi `POST /api/tasks`).
+   - **Hoàn thành nhiệm vụ:** Bấm "Hoàn thành" trên từng thẻ nhiệm vụ (gọi `PUT /api/tasks/:id`).
+   - **Xóa nhiệm vụ:** Bấm "Xóa" trên từng thẻ nhiệm vụ (gọi `DELETE /api/tasks/:id`).
+   - **Đăng xuất:** Bấm "Đăng xuất" ở góc trên bên phải.
+
+*Lưu ý: Toàn bộ dữ liệu được đồng bộ trực tiếp qua REST API (sử dụng fetch()), không lưu Task vào localStorage.*
+
+---
+
+## 7. Hướng dẫn chạy và Demo trên Postman
 
 ### Cách 1: Sử dụng giao diện Postman (GUI)
 1. Mở ứng dụng **Postman**.
@@ -135,7 +167,7 @@ npx newman run postman/Student_Task_Manager_API.postman_collection.json
 
 ---
 
-## 📤 7. Đưa dự án lên GitHub Repository riêng
+## 8. Đưa dự án lên GitHub Repository riêng
 
 Dự án hoàn toàn độc lập, đã được tạo sẵn file `.gitignore`. Để đẩy lên GitHub riêng:
 
