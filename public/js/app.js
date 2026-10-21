@@ -549,6 +549,7 @@
     editingId = task?.id ?? null;
     $("task-form").reset();
     inlineError("task-form-error");
+    $("task-due-date").min = localDay();
     const nextWeek = new Date();
     nextWeek.setDate(nextWeek.getDate() + 7);
     const defaults = {
@@ -615,6 +616,11 @@
     if (!payload.title) {
       $("task-title").setCustomValidity("Vui lòng nhập tên nhiệm vụ.");
       $("task-title").reportValidity();
+      return;
+    }
+    if (payload.dueDate && payload.dueDate < localDay()) {
+      inlineError("task-form-error", "Hạn hoàn thành phải là hôm nay hoặc một ngày trong tương lai.");
+      $("task-due-date").focus();
       return;
     }
     inlineError("task-form-error");

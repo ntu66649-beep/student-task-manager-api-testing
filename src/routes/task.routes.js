@@ -6,6 +6,15 @@ const { authenticateToken } = require('../middleware/auth.middleware');
 // Protect all task routes with authentication
 router.use(authenticateToken);
 
+const isValidDueDate = (value) => {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const parsed = new Date(`${value}T00:00:00.000Z`);
+  if (Number.isNaN(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== value) return false;
+  const now = new Date();
+  const today = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate())).toISOString().slice(0, 10);
+  return value >= today;
+};
+
 /**
  * @route   GET /api/tasks
  * @desc    Get all student tasks (supports optional status query)
@@ -97,6 +106,13 @@ router.post('/', (req, res) => {
     });
   }
 
+  if (dueDate !== undefined && dueDate !== '' && !isValidDueDate(dueDate)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Validation failed: Due date must be today or a future date (YYYY-MM-DD)'
+    });
+  }
+
   const newTask = {
     id: getNextTaskId(),
     title: title.trim(),
@@ -164,6 +180,13 @@ router.put('/:id', (req, res) => {
     return res.status(400).json({
       success: false,
       message: `Invalid priority. Allowed values: ${validPriorities.join(', ')}`
+    });
+  }
+
+  if (dueDate !== undefined && dueDate !== '' && !isValidDueDate(dueDate)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Validation failed: Due date must be today or a future date (YYYY-MM-DD)'
     });
   }
 
