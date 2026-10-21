@@ -6,7 +6,7 @@ Dự án REST API đơn giản và bộ kiểm thử tự động (Automated API
 
 ## 📌 1. Giới thiệu dự án
 
-Dự án mô phỏng hệ thống quản lý nhiệm vụ học tập của sinh viên (**Student Task Manager**), cung cấp các API RESTful phục vụ cho việc kiểm thử tự động, kèm theo giao diện web tối giản minh họa kết nối REST API.
+Dự án mô phỏng hệ thống quản lý nhiệm vụ học tập của sinh viên (**Student Task Manager**), cung cấp các API RESTful phục vụ cho việc kiểm thử tự động, kèm theo giao diện web quản lý học tập với tổng quan tiến độ và đầy đủ thao tác nhiệm vụ qua REST API.
 
 - **Backend:** Node.js, Express.js.
 - **Frontend:** HTML, CSS, JavaScript thuần (kết nối REST API qua `fetch()`, không lưu task vào `localStorage`).
@@ -25,7 +25,7 @@ student-task-manager-api-testing/
 │   └── Student_Task_Manager_Environment.postman_environment.json # Postman Environment
 ├── public/                                           # Giao diện Website minh họa REST API
 │   ├── css/
-│   │   └── style.css                                 # Giao diện tối giản, chuyên nghiệp (không emoji)
+│   │   └── style.css                                 # Giao diện navy/cam, sáng/tối, responsive
 │   ├── js/
 │   │   └── app.js                                    # Logic kết nối API qua fetch()
 │   └── index.html                                    # Trang chủ (Login & Dashboard)
@@ -135,10 +135,11 @@ Collection bao gồm đầy đủ kịch bản kiểm thử **Thành công (Posi
 4. Trải nghiệm các chức năng trực quan:
    - **Xem danh sách nhiệm vụ:** Tải dữ liệu thực từ `GET /api/tasks`.
    - **Lọc nhiệm vụ:** Lọc theo trạng thái `TODO`, `IN_PROGRESS`, `COMPLETED`.
-   - **Thêm nhiệm vụ:** Điền form và bấm "Thêm nhiệm vụ" (gọi `POST /api/tasks`).
-   - **Hoàn thành nhiệm vụ:** Bấm "Hoàn thành" trên từng thẻ nhiệm vụ (gọi `PUT /api/tasks/:id`).
-   - **Xóa nhiệm vụ:** Bấm "Xóa" trên từng thẻ nhiệm vụ (gọi `DELETE /api/tasks/:id`).
-   - **Đăng xuất:** Bấm "Đăng xuất" ở góc trên bên phải.
+   - **Thêm nhiệm vụ:** Bấm "Tạo nhiệm vụ", điền biểu mẫu rồi lưu (gọi `POST /api/tasks`).
+   - **Chi tiết và chỉnh sửa:** Bấm tên nhiệm vụ để xem chi tiết hoặc "Sửa" để cập nhật các trường.
+   - **Chuyển trạng thái:** Bấm vòng tròn trước tên nhiệm vụ: Cần làm → Đang làm → Hoàn thành → Cần làm (gọi `PUT /api/tasks/:id`).
+   - **Xóa nhiệm vụ:** Bấm "Xóa" rồi xác nhận trong hộp thoại (gọi `DELETE /api/tasks/:id`).
+   - **Đăng xuất:** Bấm "Đăng xuất" trong thanh điều hướng.
 
 *Lưu ý: Toàn bộ dữ liệu được đồng bộ trực tiếp qua REST API (sử dụng fetch()), không lưu Task vào localStorage.*
 
@@ -182,3 +183,19 @@ git push -u origin main
 
 ---
 *Dự án thực hiện cho môn học SWT301 - Software Testing.*
+
+## 9. Giao diện quản lý học tập
+
+Frontend được đồng bộ toàn bộ màn hình đăng nhập, tổng quan, nhiệm vụ và nhiệm vụ đã hoàn thành:
+
+- Bố cục navy/cam, tiếng Việt có dấu, giao diện sáng/tối và bố cục thích ứng điện thoại.
+- Thẻ thống kê và biểu đồ tiến độ có thể bấm để lọc nhiệm vụ. Thống kê luôn tính trên toàn bộ dữ liệu, độc lập với bộ lọc danh sách.
+- Tìm kiếm có hoặc không dấu theo tên, mô tả, môn học; lọc trạng thái/ưu tiên; sắp xếp theo việc cần chú ý, hạn hoàn thành, mới nhất và tên.
+- Chuyển giữa danh sách và bảng nhóm theo trạng thái. Việc quá hạn, ưu tiên cao được đưa lên trước; ngày quá hạn được đánh dấu.
+- Tạo, xem chi tiết, chỉnh sửa toàn bộ trường, chuyển trạng thái và xóa sau khi xác nhận. Bấm vòng tròn trạng thái để chuyển Cần làm → Đang làm → Hoàn thành → Cần làm.
+- Có trạng thái tải, rỗng, lỗi kết nối và nút thử lại; thông báo sau thao tác; tự trở về đăng nhập khi phiên không hợp lệ.
+- Biểu mẫu có nhãn, hỗ trợ bàn phím, đóng bằng Escape, giới hạn focus trong hộp thoại và tôn trọng tùy chọn giảm chuyển động.
+
+Không cần build frontend hoặc cài thêm thư viện UI. Chạy `npm ci` rồi `npm start`, mở `http://localhost:3000`. Có thể đổi cổng bằng biến môi trường `PORT`.
+
+Dữ liệu nhiệm vụ nằm trong bộ nhớ máy chủ và sẽ trở về dữ liệu mẫu khi khởi động lại server. Trình duyệt chỉ lưu tùy chọn giao diện/cách hiển thị trong localStorage; phiên đăng nhập trong sessionStorage.
